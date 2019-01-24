@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+###
+# @file shlog Run a command, logging output to rotating log files.  This utility
+# runs a command, sending output to a rotating set of log files.  Output is also
+# sent to the screen.
+#
+# Copyright 2019 John Scott
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#-------------------------------------------------------------------------------
+# The "set -euo pipefail" command gives strict checking (abort on error, unbound
+# variables & pipe failure), making the script more robust to unexpected errors.
+# NB: Statements such as "command || rc=$?" mean run command and catch failures
+# in variable rc rather than abort.  Statements such as "command || true" means
+# run command and ignore any failures. 
+set -euo pipefail
+
+# Check for help option...
+if [ $# -eq 0 -o "$*" = "?" -o "$*" = "-?" -o "$*" = "/?" -o "$*" = "-h" -o "$*" = "--help" ]; then
+	cat << :END
+Usage: ${0##*/} [Options] [-v] [-x] Command [CommandArguments]
+Run a command, logging output to rotating log files.
+
+Options:
+  -b Run script in background (Default foreground).
+  -c Log file count (Default 10).
+  -f Log file name  (Default ~/{Script}.log).
+  -q Quiet (No terminal input/output).
+  -s Log file size  (Default 1MB).
+
+  -v Verbose.
+  -x Debug.
+:END
+	exit 0
+fi
+
+# Direct verbose output to /dev/null...
+exec 3>/dev/null
+
+# Parse arguments...
+while getopts :bc:f:qs:vx- OPT; do
+	echo Option -$OPT ${OPTARG:-} >&3
+	case $OPT in
+		b|q)SHLOG_MODE=$OPT;;
+		c)	SHLOG_COUNT=$OPTARG;;
+		f)	SHLOG_FILE=$OPTARG;;
+		s)	SHLOG_SIZE=$OPTARG;;
+
+		v)  exec 3>&2;; # Redirect verbose output to stderr.
+		x)  set -x;;    # Turn bash debugging on.
+		-)  break;;     # No more options.
+
+		:)  echo "ERROR: Required parameter for -$OPTARG missing." >&2; exit 64;;
+		\?) echo "ERROR: Invalid option -$OPTARG specified." >&2; exit 64;;
+		*)  echo "ERROR: Option -$OPT not yet implemented." >&2; exit 64;;
+	esac
+
+	# Capture the option so it can be passed through to background call.
+	SHLOG_OPTS="${SHLOG_OPTS:-}${SHLOG_OPTS:+ }-${OPT}${OPTARG:+ }${OPTARG:-}"
+done
+shift $(( $OPTIND -1 ))
+
+echo SHLOG_MODE=${SHLOG_MODE:-} >&3
+echo SHLOG_COUNT=${SHLOG_COUNT:-} >&3
+echo SHLOG_FILE=${SHLOG_FILE:-} >&3
+echo SHLOG_SIZE=${SHLOG_SIZE:-} >&3
+
+rc=0
+case "${SHLOG_MODE:-}" in
+	b)	echo Checking $1 can be executed. >&3
+		type "$1" >/dev/null 2>&1 || rc=$?
+		if [ $rc -gt 0 ]; then
+			echo ERROR: $1 not found or not executable. >&2
+			rc=127	# Simulate shell not executable error code.
+		else
+			# Double fork the background process.
+			echo Starting $0 $1... >&3
+			($0 ${SHLOG_OPTS:-} -q "$@" &) || rc=$?
+			echo Started $0 $1 RC $rc >&3
+		fi;;
+
+	q)	echo Executing $1... >&3
+		exec </dev/null >/dev/null 2>&1 3>&-
+		"$@" </dev/null 2>&1 3>&- | ${0%/*}/shlogger ${SHLOG_COUNT:+-c$SHLOG_COUNT} ${SHLOG_SIZE:+-s$SHLOG_SIZE} ${SHLOG_FILE:-~/${1##*/}.log} >/dev/null 2>&1 3>&- || rc=$?
+		echo Executed $1 RC $rc >&3;;
+
+	*)	echo Running $1... >&3
+		"$@" 2>&1 3>&- | ${0%/*}/shlogger -t ${SHLOG_COUNT:+-c$SHLOG_COUNT} ${SHLOG_SIZE:+-s$SHLOG_SIZE} ${SHLOG_FILE:-~/${1##*/}.log} 3>&- || rc=$?
+		echo Completed $1 RC $rc >&3;;
+esac
+
+echo ShLog exiting with RC $rc >&3
+exit $rc
