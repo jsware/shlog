@@ -43,7 +43,7 @@
 *.exe
 *.out
 *.app
-scripts/slogger
+scripts/shlogger
 
 # Directories
 .vagrant
