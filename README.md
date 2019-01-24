@@ -74,7 +74,7 @@ MyFunction 1 2 3 4 World
 ```
 produces the log output with messages inside the function indented inline with the function name.
 ```
-Loggins level ALL
+Logging level ALL
 ->MyFunction 1 2 3 4
   Hello 1 2 3 4 World!
 <-MyFunction returns 0
