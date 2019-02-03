@@ -77,4 +77,4 @@ done
 rm /tmp/$$.out || die Removing $$.out failed
 
 cat $SHLOG_FILE
-echo Testing ShLogLevel output control PASSED.
+echo Testing Shlogging indentation PASSED.
