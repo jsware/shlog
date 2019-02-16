@@ -244,9 +244,13 @@ write(const std::string &line)
     strftime(nowText, sizeof(nowText), "%a %b %d %T UTC %Y", t);
     out_    << nowText
             << '\t' << hostname_
-            << '\t' << username_
-            << '\t' << scriptName_
-            << '\t' << pid_
+            << '\t' << username_;
+            
+    if(scriptName_ != "" ) {
+        out_ << '\t' << scriptName_;
+    }
+    
+    out_    << '\t' << pid_
             << '\t' << prefix
             << '\t' << line
             << std::endl;
