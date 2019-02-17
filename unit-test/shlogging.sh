@@ -53,7 +53,7 @@ rm -f $SHLOG_FILE* || die Log file setup
 
 ${0%/*}/../scripts/shlog -f $SHLOG_FILE ${0%/*}/shlogging.loop
 echo Checking output of shlog:
-LINE_STR="$(date -u +"^%a %b %d [0-9]{2}:[0-9]{2}:[0-9]{2} %Z %Y	`hostname`	`whoami`	[0-9]{1,5}	INFO	Loop count [0-9]$")"
+LINE_STR="$(date -u +"^%a %b %e [0-9]{2}:[0-9]{2}:[0-9]{2} %Z %Y	`hostname`	`whoami`	[0-9]{1,5}	INFO	Loop count [0-9]$")"
 grep -vE "$LINE_STR" $SHLOG_FILE && die "Found UNEXPECTED output in $SHLOG_FILE"
 
 cat $SHLOG_FILE

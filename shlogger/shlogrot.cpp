@@ -241,7 +241,7 @@ write(const std::string &line)
     }
 
     // Get rid of the trailing \n character.
-    strftime(nowText, sizeof(nowText), "%a %b %d %T UTC %Y", t);
+    strftime(nowText, sizeof(nowText), "%a %b %e %T UTC %Y", t);
     out_    << nowText
             << '\t' << hostname_
             << '\t' << username_;

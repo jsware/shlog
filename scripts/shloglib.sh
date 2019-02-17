@@ -29,7 +29,7 @@ ShLog () {
 	local ts= writer=
 
 	for writer in ${SHLOG_WRITERS:=ShLog2File ShLog2StdOut}; do
-		$writer "${ts:=`date -u`}" "$1" "${SHLOG_INDENT:=}" "$2"
+		$writer "${ts:=`date -u "+%a %b %e %T %Z %Y"`}" "$1" "${SHLOG_INDENT:=}" "$2"
 	done
 }
 
@@ -40,7 +40,7 @@ ShLogPipe () {
 	# Send each line of input to each writer function (defaults ShLog2File and ShLog2StdOut).
 	while IFS= read -r line; do
 		for writer in ${SHLOG_WRITERS:=ShLog2File ShLog2StdOut}; do
-			$writer "${ts:=`date -u`}" "$1" "${SHLOG_INDENT:=}" "${2:-}$line"
+			$writer "${ts:=`date -u "+%a %b %e %T %Z %Y"`}" "$1" "${SHLOG_INDENT:=}" "${2:-}$line"
 		done
 	done
 }
