@@ -69,6 +69,11 @@ test "`ShLogEnter Test $$ 2>&1`"   == "->Test $$"			|| die ShLogEnter Test unexp
 test "`ShLogLeave Test $$ 2>&1`"   == "<-Test $$"			|| die ShLogLeave Test unexpected output
 test "`ShLogFinest Test $$ 2>&1`"  == "Test $$"				|| die ShLogFinest Test unexpected output
 
+echo -n Checking contents of log file $SHLOG_FILE...
+LINE_STR="$(date -u +"^%a %b %e [0-9]{2}:[0-9]{2}:[0-9]{2} %Z %Y	`hostname`	`whoami`	[0-9]{1,5}	[A-Z]{4,7}	.+$")"
+grep -vE "$LINE_STR" $SHLOG_FILE && die "Found UNEXPECTED output in $SHLOG_FILE"
+echo OK.
+
 cat $SHLOG_FILE
 echo Testing basic ShLogging functions PASSED.
 exit 0
