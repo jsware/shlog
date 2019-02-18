@@ -1,5 +1,5 @@
 ###
-# @file Makefile The UNIX makefile for the ShLogger log rotation utility.
+# @file Makefile The UNIX makefile for the shlog package.
 #
 # Copyright 2019 John Scott
 #
@@ -16,7 +16,7 @@
 # limitations under the License.
 
 # Default to build changes.
-.PHONY: all clean shlogger
+.PHONY: all clean shlogger install
 all: shlogger
 	@echo Completed make all
 
@@ -27,44 +27,28 @@ ifeq ($(UNAME), AIX)
   # IBM AIX...
   PLATFORM=aix
 
-  CC  = xlC_r
-  LD  = xlC_r
-
-  ALL_CCFLAGS  = -g -qstaticinline -qrtti=all -qtemplateregistry=./obj/template.reg
-  ALL_LDFLAGS  =
+  TARG_DIR=$(DESTDIR)/usr/local/bin
 endif
 
 ifeq ($(UNAME), CYGWIN_NT-5.1)
   # Cygwin on Windows.
   PLATFORM = cygwin
 
-  CC  = gcc
-  LD  = gcc
-
-  ALL_CCFLAGS  = -g
-  ALL_LDFLAGS  = -lstdc++
+  TARG_DIR=$(DESTDIR)/usr/local/bin
 endif
 
 ifeq ($(UNAME), Linux)
   # Linux.
   PLATFORM = Linux
 
-  CC  = g++
-  LD  = g++
-
-  ALL_CCFLAGS  = -g
-  ALL_LDFLAGS  = -lstdc++
+  TARG_DIR=$(DESTDIR)/usr/local/bin
 endif
 
 ifeq ($(UNAME), Darwin)
   # Linux.
   PLATFORM = Darwin
 
-  CC  = g++
-  LD  = g++
-
-  ALL_CCFLAGS  = -g
-  ALL_LDFLAGS  = -lstdc++
+  TARG_DIR=$(DESTDIR)/usr/local/bin
 endif
 
 ifeq ($(PLATFORM), unknown)
@@ -72,43 +56,15 @@ ifeq ($(PLATFORM), unknown)
   $(error Unknown UNIX platform $(UNAME))
 endif
 
-# Directories...
-SRCDIR = .
-OBJDIR = ./obj
-BINDIR = ./bin
-
-# Compiler flags...
-INCPATHS = -I.
-LIBPATHS =
-LIBRARIES = $(LIB_PTHREAD)
-
-CCFLAGS = $(ALL_CCFLAGS) $(INCPATHS)
-LDFLAGS = $(ALL_LDFLAGS) $(LIBPATHS) $(LIBRARIES)
-
-# Compilation Units...
-TARGET  = $(BINDIR)/shlogger
-
-OBJECTS = $(OBJDIR)/shlogger.o \
-          $(OBJDIR)/shlogrot.o
-
 # Build Rules...
 clean:
-	rm -fr $(OBJDIR)
-	rm -fr $(BINDIR)
-	rm -fr ../scripts/shlogger
+	make -C shlogger clean
 	@echo Completed make clean
 
-shlogger: $(TARGET)
-	cp $(TARGET) ../scripts
+shlogger:
+	make -C shlogger all
 	@echo Completed make shlogger
 
-# Build directories...
-$(OBJDIR) $(BINDIR):
-	if [ ! -d $@ ]; then mkdir $@; fi
-
-# Sources...
-$(TARGET): $(BINDIR) $(OBJDIR) $(OBJECTS)
-	$(LD) -o $@ $(OBJECTS) $(LDFLAGS)
-
-$(OBJECTS): $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(SRCDIR)/shlogrot.h
-	$(CC) -c -o $@ $(CCFLAGS) $<
+install: shlogger
+	echo mkdir -p $(TARG_DIR)
+	install -C scripts/shlog scripts/shlogger scripts/shloglib.sh $(TARG_DIR)
