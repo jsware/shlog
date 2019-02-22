@@ -16,7 +16,7 @@
 # limitations under the License.
 
 # Default to build changes.
-.PHONY: all clean shlogger install
+.PHONY: all clean shlogger test-all install
 all: shlogger
 	@echo Completed make all
 
@@ -64,6 +64,9 @@ clean:
 shlogger:
 	make -C shlogger all
 	@echo Completed make shlogger
+
+test-all:
+	unit-test/all.sh
 
 install: shlogger
 	echo mkdir -p $(TARG_DIR)
