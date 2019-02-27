@@ -6,7 +6,7 @@ A shell script logging framework.
 
 The ShLog framework provides a set of logging functions for shell scripts.  Additionally a `shlog` wrapper script is available to capture existing script output into rotating log files without modification.
 
-The logging functions (e.g. ShlogInfo, ShlogWarning, ShlogError) output messages to standard output/error and log these same messages to a rotating set of log files.  Shlog functions for more detailed logging (ShlogConfig, ShlogDebug, ShlogFine, ShlogFiner and ShlogFinest) are also available.
+The logging functions (e.g. ShLogInfo, ShLogWarning, ShLogError) output messages to standard output/error and log these same messages to a rotating set of log files.  ShLog* functions for more detailed logging (ShLogConfig, ShLogDebug, ShLogFine, ShLogFiner and ShLogFinest) are also available.
 
 Include the functions into a script using the source command:
 
@@ -18,7 +18,7 @@ The log file name is set using the `SHLOG_FILE` environment variable.  Whether S
 
 ## Additional ShLogging environment variables
 
-The `SHLOG_WRITERS` variable is a space separated list of functions called to write each log message.  By default it uses `ShLog2File` and `ShLog2StdOut`.  An additional function `ShLog2StdErr` is available as an alternative to `ShLog2StdOut` if your script is designed to output data to stdout so shlogging needs to output to a different file handle.
+The `SHLOG_WRITERS` variable is a space separated list of functions called to write each log message.  By default it uses `ShLog2File` and `ShLog2StdOut`.  An additional function `ShLog2StdErr` is available as an alternative to `ShLog2StdOut` if your script is designed to output data to stdout so shlogging needs to output to a different file handle.  NB: ShLogError and ShLogWarning output is redirected to *stderr* when using ShLog2StdOut.
 
 The ShLogLevel function can set `SHLOG_LEVEL` using more memorable text values:
   * `ERROR` (-3) for errors only;
