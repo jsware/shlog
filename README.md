@@ -49,7 +49,7 @@ Scripts use the following functions to record logging statements:
 * `ShLogFiner` outputs more detailed messages to stdout;
 * `ShLogFinest` outputs the finest messages to stdout.
 
-Log messages can be passed via command line parameters (e.g. `ShLogInfo "Hello Wordl!"`) or output can be piped to each ShLog statement using the `pipe` option: `cat ./file.txt | ShLogDebug --pipe`.
+Log messages can be passed via command line parameters (e.g. `ShLogInfo "Hello World!"`) or output can be piped to each ShLog statement using the `pipe` option: `cat ./file.txt | ShLogDebug --pipe`.
 
 ## Instrumenting your functions
 
