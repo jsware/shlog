@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <fstream>
 #include <limits.h>
+#include <pwd.h>
 #include <sstream>
 #include <stdexcept>
 #include <stdlib.h>
@@ -141,9 +142,10 @@ ShLogRotatorImpl(const std::string &logFile, int logCount, long logSize, int pid
 , pid_(pid)
 , scriptName_(scriptName)
 , hostname_("unknown")
-, username_(getenv("LOGNAME"))
+, username_("unknown")
 {
     char hostname[HOST_NAME_MAX + 1];
+    struct passwd *pw = getpwuid(geteuid());
 
     if(logFile_ == "") {
         throw std::runtime_error("Invalid log file name ''");
@@ -166,6 +168,10 @@ ShLogRotatorImpl(const std::string &logFile, int logCount, long logSize, int pid
         perror(hostname + 3);
     }
     hostname_ = hostname;
+
+    if(pw) {
+        username_ = pw->pw_name;
+    }
 }
 
 
