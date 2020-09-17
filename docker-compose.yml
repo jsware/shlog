@@ -1,0 +1,8 @@
+version: "3.7"
+
+services:
+  shlog:
+    image: gcc
+    tty: true
+    volumes:
+      - ./:/app
