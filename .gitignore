@@ -46,6 +46,8 @@
 scripts/shlogger
 
 # Directories
+.DS_Store
 .vagrant
 bin
 obj
+_site

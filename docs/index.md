@@ -1,3 +1,17 @@
+---
+title: ShLog
+layout: splash
+header:
+  overlay_image: /assets/images/shlog.jpg
+  overlay_filter: 0.25
+  actions:
+    - label: "<i class='fab fa-github'></i> View on GitHub"
+      url: "https://github.com/jsware/shlog"
+  caption: "Photo credit: [**Unsplash**](https://unsplash.com/photos/9djCUr51BmY)"
+excerpt: >
+  Logging functions for shell scripts and a 'shlog' wrapper script to capture
+  existing script output into rotating log files.
+---
 # ShLog
 
 A shell script logging framework.
