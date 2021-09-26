@@ -38,4 +38,3 @@ analytics:
 plugins:
   - jekyll-include-cache
   - jekyll-seo-tag
-  
